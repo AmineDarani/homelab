@@ -1,0 +1,14 @@
+.env
+stacks/*/.env
+stacks/traefik/acme.json
+stacks/wazuh/config/wazuh_indexer_ssl_certs/
+plans/
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+**/data/

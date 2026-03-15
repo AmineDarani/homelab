@@ -1,0 +1,49 @@
+# =============================================================================
+# Homelab CI: validate Docker Compose files and lint YAML
+# Runs on every push/PR to main. Discovers stacks dynamically.
+# =============================================================================
+
+name: Validate Homelab
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-compose:
+    name: Validate Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create dummy .env
+        run: |
+          cp .env.example .env
+          sed -i 's/<[^>]*>/placeholder/g' .env
+
+      - name: Validate all compose files
+        run: |
+          for dir in stacks/*/; do
+            if [ -f "${dir}docker-compose.yml" ]; then
+              echo "Validating $dir..."
+              docker compose -f "${dir}docker-compose.yml" --env-file .env config --quiet
+              echo "  OK"
+            fi
+          done
+          echo "Compose validation finished."
+
+  lint-yaml:
+    name: Lint YAML
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: yamllint -d relaxed .
