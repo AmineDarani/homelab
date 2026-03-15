@@ -1,7 +1,3 @@
-# =============================================================================
-# Homelab CI: validate Docker Compose files and lint YAML
-# Runs on every push/PR to main. Discovers stacks dynamically.
-# =============================================================================
 
 name: Validate Homelab
 
