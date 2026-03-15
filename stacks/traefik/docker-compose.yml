@@ -1,0 +1,34 @@
+# =============================================================================
+# Traefik v3 - Reverse proxy and TLS termination for mylab.com
+# All other services are routed through Traefik via Docker labels.
+# =============================================================================
+
+services:
+  traefik:
+    image: traefik:v3.3
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"    # HTTP (redirects to HTTPS)
+      - "443:443"  # HTTPS
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./config:/etc/traefik/config:ro
+      - ./acme.json:/acme.json
+    networks:
+      - proxy
+    labels:
+      # Enable Traefik to discover this container
+      - "traefik.enable=true"
+      # Dashboard router: https://traefik.mylab.com
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.mylab.com`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      # Forward-auth: protect dashboard with Authentik
+      - "traefik.http.routers.traefik-dashboard.middlewares=authentik@file"
+
+networks:
+  proxy:
+    external: true
