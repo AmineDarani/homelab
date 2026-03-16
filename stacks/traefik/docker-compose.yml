@@ -1,11 +1,11 @@
 # =============================================================================
-# Traefik v3 - Reverse proxy and TLS termination for mylab.com
+# Traefik v3.6 - Reverse proxy and TLS termination for mylab.com
 # All other services are routed through Traefik via Docker labels.
 # =============================================================================
 
 services:
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.6
     container_name: traefik
     restart: unless-stopped
     environment:
